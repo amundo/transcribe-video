@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>  
+  <title>&lt;transcribe-video></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="transcribe-video.css">
+
+</head>
+<body>
+
+  <transcribe-video></transcribe-video>
+  <input type="file" id="fileInput" accept="video/*">
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const transcribeVideo = document.querySelector('transcribe-video');
+
+  fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const blob = new Blob([file], { type: file.type });
+      transcribeVideo.video = blob;
+    }
+  })
+  
+  </script>
+  
+<script type="module">
+import {TranscribeVideo} from './TranscribeVideo.js'
+
+window.TranscribeVideo = document.querySelector('transcribe-video')
+</script>
+
+</body>
+</html>

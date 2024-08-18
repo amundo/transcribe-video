@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "build": "pandoc -f markdown -t html --section-divs --css transcribe-video-docs.css --template=template.html -o transcribe-video-docs.html transcribe-video-docs.md"
+  }
+}

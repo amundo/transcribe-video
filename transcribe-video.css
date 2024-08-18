@@ -1,0 +1,6 @@
+html,body,transcribe-video,video{
+  height: 100%;
+}
+transcribe-video {
+  display: grid;
+}

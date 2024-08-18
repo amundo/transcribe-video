@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Activity Detection</title>
+</head>
+<body>
+    <h1>Voice Activity Detection</h1>
+    <input type="file" id="media-file-input" accept="audio/*,video/*">
+    <pre id="output"></pre>
+
+    <script type="module">
+        const worker = new Worker('voice-activity-detection-worker.js');
+        worker.onmessage = function(event) {
+            const intervals = event.data;
+            document.querySelector('#output').textContent = JSON.stringify(intervals, null, 2);
+        };
+
+        document.querySelector('#media-file-input').addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('output').textContent = 'Processing...';
+
+                const audioContext = new AudioContext;
+                const arrayBuffer = await file.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                const channelData = audioBuffer.getChannelData(0); // Extract first channel
+
+                // Create a SharedArrayBuffer with the same size as the channelData
+                const sharedArrayBuffer = new SharedArrayBuffer(channelData.length * Float32Array.BYTES_PER_ELEMENT);
+
+                // Create a Float32Array view of the SharedArrayBuffer
+                const sharedChannelData = new Float32Array(sharedArrayBuffer);
+
+                // Copy the audio data into the shared array
+                sharedChannelData.set(channelData);
+
+                // Send the SharedArrayBuffer to the worker
+                worker.postMessage({
+                    channelDataBuffer: sharedArrayBuffer,
+                    sampleRate: audioBuffer.sampleRate
+                });
+            }
+        });
+    </script>
+</body>
+</html>
